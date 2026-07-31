@@ -42,7 +42,13 @@ test.describe("Pagination (Load More)", () => {
         : { items: FIRST_PAGE, nextCursor: "CURSOR_A" },
     );
 
-    expect(requests).toHaveLength(1);
+    // TODO: investigate whether this can go back to a synchronous assertion.
+    // page.goto()'s `load` event can resolve before the SPA has hydrated and
+    // fired its first fetch (observed gap: tens to several hundred ms,
+    // apparently proportional to host CPU contention at test-run time), so
+    // checking `requests` synchronously right after navigation is a real race
+    // rather than an app bug — poll briefly instead.
+    await expect.poll(() => requests.length).toBe(1);
     await expect(listItems(page)).toHaveCount(FIRST_PAGE.length);
     await expect(loadMoreButton(page)).toBeVisible();
     await expect(loadMoreButton(page)).toBeEnabled();

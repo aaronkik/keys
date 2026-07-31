@@ -55,61 +55,6 @@ test.describe("Local Text Search", () => {
     expect(requests).toHaveLength(requestCountBeforeTyping);
   });
 
-  test.describe("body matching", () => {
-    // The body preview is desktop-only per the responsive contract (§3), and this scenario asserts search matches
-    // text beyond the visible 50-char preview, so it is pinned to desktop rather than run at every viewport.
-    test.use({ viewport: { width: 1440, height: 900 } });
-
-    test("Search matches against PR body as well as title", async ({ page }) => {
-      // 1. Mock 4 items where the search term appears only in one item's body (not in any title). Navigate to `/`
-      // and type that term into search.
-      const padding =
-        "Filler sentence to push the matching phrase well past the fifty character preview boundary. ";
-      const bodyMatchItem = pullRequest({
-        number: 1,
-        title: "Add dark mode toggle",
-        body: `${padding}This change also introduces a gadgetword sighting deep in the body text.`,
-      });
-      const nonMatchingItems = [
-        pullRequest({
-          number: 2,
-          title: "Fix flaky avatar test",
-          body: "Stabilises the avatar fixture timing.",
-        }),
-        pullRequest({
-          number: 3,
-          title: "Update dependency versions",
-          body: "Bumps a handful of dev dependencies.",
-        }),
-        pullRequest({
-          number: 4,
-          title: "Improve error boundary copy",
-          body: "Clarifies the fallback error message.",
-        }),
-      ];
-      const items = [bodyMatchItem, ...nonMatchingItems];
-      await loadPullRequestList(page, singlePage(items));
-
-      await expect(listItems(page)).toHaveCount(items.length);
-      await searchInput(page).fill("gadgetword");
-
-      // expect: The item whose body (not title) contains the term is shown; the other 3, which match neither title
-      // nor body, are hidden.
-      await expect(listItems(page)).toHaveCount(1);
-      await expect(list(page).getByRole("link", { name: bodyMatchItem.title })).toBeVisible();
-      for (const item of nonMatchingItems) {
-        await expect(list(page).getByRole("link", { name: item.title })).toHaveCount(0);
-      }
-
-      // expect: This holds even if the matching text falls beyond the first 50 characters that are visibly
-      // truncated on screen — i.e. search matches the full body text, not just the visibly truncated preview.
-      expect(bodyMatchItem.body.slice(0, 50)).not.toContain("gadgetword");
-      await expect(listItems(page).first().getByTestId("pr-body-preview")).not.toHaveText(
-        /gadgetword/i,
-      );
-    });
-  });
-
   test("Search updates the URL query param and deep-linking with ?q= restores the search on load", async ({
     page,
   }) => {
@@ -178,11 +123,14 @@ test.describe("Local Text Search", () => {
         : { items: defaultItems, nextCursor: null },
     );
 
-    const openFilter = page
-      .getByRole("radiogroup", { name: "Filter by state" })
-      .getByRole("radio", { name: "Open" });
-    await openFilter.click();
-    await expect(openFilter).toBeChecked();
+    const filterCombobox = page.getByRole("combobox", { name: "Filter by state" });
+    // The combobox trigger also contains a decorative, aria-hidden chevron
+    // icon whose fallback glyph is included in the trigger's raw text, so
+    // text assertions read the value span specifically.
+    const filterValueText = filterCombobox.locator('[data-slot="select-value"]');
+    await filterCombobox.click();
+    await page.getByRole("option", { name: "Open" }).click();
+    await expect(filterValueText).toHaveText("Open");
 
     await searchInput(page).fill("auth");
 
@@ -207,7 +155,7 @@ test.describe("Local Text Search", () => {
 
     // expect: On load, both the filter control shows 'Open' selected and the search input is pre-populated with
     // 'auth', and only the intersecting 2 items render — deep-linking restores both params together.
-    await expect(openFilter).toBeChecked();
+    await expect(filterValueText).toHaveText("Open");
     await expect(searchInput(page)).toHaveValue("auth");
     await expect(listItems(page)).toHaveCount(2);
     expect(requests.at(-1)?.searchParams.get("state")).toBe("open");

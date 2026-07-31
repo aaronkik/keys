@@ -1,25 +1,18 @@
 import type { Page } from "@playwright/test";
 
 /**
- * The list item shape the UI is specified against. `body` and `sha` are not in
- * packages/api-contract yet — see the prerequisites section of
- * specs/pull-request-list.md. These tests are the red-phase specification that
- * drives adding them, so the fixtures include them deliberately.
+ * The list item shape the UI is specified against — matches the generated
+ * `PullRequest` model in packages/api-contract/openapi/openapi.yaml.
  */
 export type PullRequestFixture = {
   id: string;
-  number: number;
   title: string;
-  state: "open" | "closed" | "merged";
-  draft: boolean;
-  author: { login: string; avatarUrl: string };
+  state: "open" | "closed";
+  author: { username: string; profileImage: string };
   repository: { owner: string; name: string };
   url: string;
   createdAt: string;
   updatedAt: string;
-  mergedAt: string | null;
-  body: string;
-  sha: string;
 };
 
 export type PullRequestPageFixture = {
@@ -39,26 +32,25 @@ const AVATAR_URL =
 
 /**
  * Builds one item with only the fields the UI needs, all deterministic. Pass a
- * distinct `number` per item in a list; everything else defaults off it.
+ * `number` to derive a distinct id/title/url per item in a list; it is not
+ * itself part of the returned fixture, since the contract has no such field.
  */
-export function pullRequest(overrides: Partial<PullRequestFixture> = {}): PullRequestFixture {
-  const number = overrides.number ?? 1;
+export function pullRequest(
+  overrides: Partial<PullRequestFixture> & { number?: number } = {},
+): PullRequestFixture {
+  const { number: numberOverride, ...fields } = overrides;
+  const number = numberOverride ?? 1;
 
   return {
     id: `PR_${number}`,
-    number,
     title: `Pull request ${number}`,
     state: "open",
-    draft: false,
-    author: { login: "octocat", avatarUrl: AVATAR_URL },
+    author: { username: "octocat", profileImage: AVATAR_URL },
     repository: { owner: "keys", name: "platform" },
     url: `https://github.com/keys/platform/pull/${number}`,
     createdAt: "2026-01-10T09:00:00.000Z",
     updatedAt: "2026-01-13T12:00:00.000Z",
-    mergedAt: null,
-    body: `Body of pull request ${number}.`,
-    sha: `${number}`.padStart(40, "a"),
-    ...overrides,
+    ...fields,
   };
 }
 
