@@ -16,7 +16,7 @@ jobs:
       - run: bun install --frozen-lockfile
 
       - name: Install browser for Vite+ browser-mode tests
-        run: bunx playwright install --with-deps chromium
+        run: bunx playwright install --with-deps
 
       - name: Lint, format and typecheck
         run: turbo run check
