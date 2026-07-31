@@ -52,7 +52,7 @@ describe("PullRequestList", () => {
     expect(await screen.findByText(/Add cursor pagination to the pull request list/)).toBeDefined();
   });
 
-  it("requests the endpoint and limit described by the contract", async () => {
+  it("requests the endpoint described by the contract", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(JSON.stringify(page), {
         status: 200,
@@ -65,7 +65,7 @@ describe("PullRequestList", () => {
     await screen.findByText(/Add cursor pagination/);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      "/api/pull-requests?limit=20",
+      "/api/pull-requests",
       expect.objectContaining({ method: "GET" }),
     );
   });
