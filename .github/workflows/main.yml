@@ -25,3 +25,14 @@ jobs:
 
       - run: turbo run test
       - run: turbo run build
+
+      - name: End-to-end tests
+        run: turbo run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/frontend/playwright-report
+          retention-days: 3

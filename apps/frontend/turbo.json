@@ -8,6 +8,11 @@
     },
     "build": {
       "outputs": ["dist/**", ".output/**", ".tanstack/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["generate"],
+      "cache": false,
+      "outputs": ["playwright-report/**", "test-results/**"]
     }
   }
 }

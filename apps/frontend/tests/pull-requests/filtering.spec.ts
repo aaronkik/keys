@@ -114,12 +114,11 @@ test.describe("Filtering by State", () => {
     // 2. Assert the initial request fired on page load already includes state=open (i.e. the filter is read from
     // the URL before/at first fetch, not applied client-side after an unfiltered fetch). Assert the filter
     // control's UI reflects 'Open' as the selected value. Assert only the 2 open items render.
-    // TODO: investigate whether this can go back to a synchronous assertion.
-    // page.goto()'s `load` event can resolve before the SPA has hydrated and
-    // fired its first fetch (observed gap: tens to several hundred ms,
-    // apparently proportional to host CPU contention at test-run time), so
-    // checking `requests` synchronously right after navigation is a real race
-    // rather than an app bug — poll briefly instead.
+    // Polling, not a workaround: page.goto()'s `load` event resolves before
+    // the SPA has hydrated and run the route loader that fires the first
+    // fetch (observed gap: tens to several hundred ms, proportional to host
+    // CPU contention). Nothing the app can do closes that window in SPA mode,
+    // so a synchronous read of `requests` here would assert on a race.
     await expect.poll(() => requests.length).toBe(1);
     expect(requests[0]?.searchParams.get("state")).toBe("open");
 
@@ -143,12 +142,11 @@ test.describe("Filtering by State", () => {
     // filter control shows 'All'.
     await expect(page.getByRole("heading", { level: 1, name: "Pull requests" })).toBeVisible();
 
-    // TODO: investigate whether this can go back to a synchronous assertion.
-    // page.goto()'s `load` event can resolve before the SPA has hydrated and
-    // fired its first fetch (observed gap: tens to several hundred ms,
-    // apparently proportional to host CPU contention at test-run time), so
-    // checking `requests` synchronously right after navigation is a real race
-    // rather than an app bug — poll briefly instead.
+    // Polling, not a workaround: page.goto()'s `load` event resolves before
+    // the SPA has hydrated and run the route loader that fires the first
+    // fetch (observed gap: tens to several hundred ms, proportional to host
+    // CPU contention). Nothing the app can do closes that window in SPA mode,
+    // so a synchronous read of `requests` here would assert on a race.
     await expect.poll(() => requests.length).toBeGreaterThan(0);
     expect(requests.at(-1)?.searchParams.get("state")).toBeNull();
     await expect(listItems(page)).toHaveCount(items.length);

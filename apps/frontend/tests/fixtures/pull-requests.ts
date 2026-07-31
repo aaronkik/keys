@@ -1,24 +1,14 @@
 import type { Page } from "@playwright/test";
 
-/**
- * The list item shape the UI is specified against — matches the generated
- * `PullRequest` model in packages/api-contract/openapi/openapi.yaml.
- */
-export type PullRequestFixture = {
-  id: string;
-  title: string;
-  state: "open" | "closed";
-  author: { username: string; profileImage: string };
-  repository: { owner: string; name: string };
-  url: string;
-  createdAt: string;
-  updatedAt: string;
-};
+import type { PullRequest, PullRequestPage } from "@/generated/models";
 
-export type PullRequestPageFixture = {
-  items: PullRequestFixture[];
-  nextCursor: string | null;
-};
+/**
+ * Aliases of the generated models rather than a hand-written copy of them: a
+ * contract change then fails these fixtures at typecheck, instead of leaving
+ * mocked scenarios passing against a shape the API no longer returns.
+ */
+export type PullRequestFixture = PullRequest;
+export type PullRequestPageFixture = PullRequestPage;
 
 /**
  * Fixed "now" for the suite. Tests freeze the browser clock to this instant so

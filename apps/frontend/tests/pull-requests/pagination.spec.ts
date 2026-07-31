@@ -42,12 +42,11 @@ test.describe("Pagination (Load More)", () => {
         : { items: FIRST_PAGE, nextCursor: "CURSOR_A" },
     );
 
-    // TODO: investigate whether this can go back to a synchronous assertion.
-    // page.goto()'s `load` event can resolve before the SPA has hydrated and
-    // fired its first fetch (observed gap: tens to several hundred ms,
-    // apparently proportional to host CPU contention at test-run time), so
-    // checking `requests` synchronously right after navigation is a real race
-    // rather than an app bug — poll briefly instead.
+    // Polling, not a workaround: page.goto()'s `load` event resolves before
+    // the SPA has hydrated and run the route loader that fires the first
+    // fetch (observed gap: tens to several hundred ms, proportional to host
+    // CPU contention). Nothing the app can do closes that window in SPA mode,
+    // so a synchronous read of `requests` here would assert on a race.
     await expect.poll(() => requests.length).toBe(1);
     await expect(listItems(page)).toHaveCount(FIRST_PAGE.length);
     await expect(loadMoreButton(page)).toBeVisible();

@@ -1,12 +1,17 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { createRootRoute, HeadContent, Link, Outlet, Scripts } from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
-import { queryClient } from "@/query-client";
+import { ErrorFallback, NotFound } from "@/components/error-fallback";
 
 import appCss from "../styles.css?url";
 
-export const Route = createRootRoute({
+export type RouterContext = {
+  queryClient: QueryClient;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -16,25 +21,24 @@ export const Route = createRootRoute({
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   component: RootComponent,
-  notFoundComponent: () => {
-    return (
-      <div>
-        <p>This is the notFoundComponent configured on root route</p>
-        <Link to="/">Start Over</Link>
-      </div>
-    );
-  },
+  errorComponent: ErrorFallback,
+  notFoundComponent: NotFound,
 });
 
 function RootComponent() {
+  const { queryClient } = Route.useRouteContext();
+
   return (
-    <RootDocument>
+    <RootDocument queryClient={queryClient}>
       <Outlet />
     </RootDocument>
   );
 }
 
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+function RootDocument({
+  queryClient,
+  children,
+}: Readonly<{ queryClient: QueryClient; children: ReactNode }>) {
   return (
     <html lang="en">
       <head>

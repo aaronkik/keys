@@ -2,22 +2,16 @@ import { defineConfig, devices } from "@playwright/test";
 
 const BASE_URL = "http://localhost:3000";
 
-/**
- * End-to-end config, separate from the Vitest browser-mode block in
- * vite.config.ts: that one runs the component tests under `src`, this one runs
- * the `tests` suites described in specs/pull-request-list.md.
- *
- * Behavioural suites run in parallel across three viewport projects, so the
- * mobile-first layout is exercised at every breakpoint on every run. The
- * responsive suites assert one breakpoint each and drive the viewport
- * themselves, so they are carved out into their own project rather than run
- * three times over.
- */
 const RESPONSIVE_SPECS = "**/responsive.spec.ts";
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
-  reporter: "list",
+  // A stray `test.only` would otherwise silently reduce CI to one scenario.
+  forbidOnly: !!process.env.CI,
+  // Only on CI, and only so `trace: "on-first-retry"` has a retry to attach to;
+  // locally a failure should stay failed rather than be papered over.
+  retries: process.env.CI ? 2 : 0,
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
@@ -61,7 +55,9 @@ export default defineConfig({
   webServer: {
     command: "bun run build && bun run preview",
     url: BASE_URL,
-    reuseExistingServer: true,
+    // Reusing a server someone left running is a convenience locally and a
+    // way to test a stale build on CI.
+    reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },
 });

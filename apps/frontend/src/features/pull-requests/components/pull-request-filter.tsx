@@ -5,26 +5,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import type { ListPullRequestsState } from "./generated/models";
-
-export type PullRequestFilterValue = Extract<ListPullRequestsState, "open" | "closed">;
+import { ListPullRequestsState } from "@/generated/models";
 
 type PullRequestFilterProps = {
-  value: PullRequestFilterValue | undefined;
-  onChange: (value: PullRequestFilterValue | undefined) => void;
+  value: ListPullRequestsState | undefined;
+  onChange: (value: ListPullRequestsState | undefined) => void;
 };
 
-/** Sentinel select value representing "no filter" — Select always needs a
- * defined value to render as controlled, and this is also the option that
- * lets a user clear a previously-selected filter (a radiogroup has no such
- * affordance once a radio is checked). */
-const ALL_VALUE = "all";
-
-const OPTIONS: Array<{ value: typeof ALL_VALUE | PullRequestFilterValue; label: string }> = [
+const OPTIONS: Array<{ value: ListPullRequestsState; label: string }> = [
   { value: "closed", label: "Closed" },
   { value: "open", label: "Open" },
-  { value: ALL_VALUE, label: "All" },
+  { value: "all", label: "All" },
 ];
 
 // Lets <SelectValue> resolve the trigger's displayed label from the current
@@ -35,7 +26,7 @@ export function PullRequestFilter({ value, onChange }: PullRequestFilterProps) {
   return (
     <Select
       items={ITEMS}
-      value={value ?? ALL_VALUE}
+      value={value ?? ListPullRequestsState.all}
       onValueChange={(next) => {
         onChange(next === "open" || next === "closed" ? next : undefined);
       }}
