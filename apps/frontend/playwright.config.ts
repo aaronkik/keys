@@ -49,12 +49,19 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  // Every scenario fulfils `/api/pull-requests` from a fixture, so only the
-  // Vite dev server is needed — the Hono backend on 3001 is never reached.
+  // Every scenario fulfils `/api/pull-requests` from a fixture, so only a
+  // static frontend build is needed — the Hono backend on 3001 is never
+  // reached. A production build + preview server is used rather than the dev
+  // server: dev mode fires the initial query twice (observed, not a
+  // StrictMode artifact — none is used in this app) and adds dev-only
+  // transform latency before the first fetch, both of which race or break
+  // scenarios that assert on captured requests. Prerendering is disabled
+  // (see vite.config.ts) since a statically prerendered heading would let
+  // page-load assertions pass before hydration/fetch even starts.
   webServer: {
-    command: "bun run dev",
+    command: "bun run build && bun run preview",
     url: BASE_URL,
     reuseExistingServer: true,
-    timeout: 120_000,
+    timeout: 180_000,
   },
 });
