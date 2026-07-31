@@ -63,16 +63,29 @@ test.describe("Local Text Search", () => {
     test("Search matches against PR body as well as title", async ({ page }) => {
       // 1. Mock 4 items where the search term appears only in one item's body (not in any title). Navigate to `/`
       // and type that term into search.
-      const padding = "Filler sentence to push the matching phrase well past the fifty character preview boundary. ";
+      const padding =
+        "Filler sentence to push the matching phrase well past the fifty character preview boundary. ";
       const bodyMatchItem = pullRequest({
         number: 1,
         title: "Add dark mode toggle",
         body: `${padding}This change also introduces a gadgetword sighting deep in the body text.`,
       });
       const nonMatchingItems = [
-        pullRequest({ number: 2, title: "Fix flaky avatar test", body: "Stabilises the avatar fixture timing." }),
-        pullRequest({ number: 3, title: "Update dependency versions", body: "Bumps a handful of dev dependencies." }),
-        pullRequest({ number: 4, title: "Improve error boundary copy", body: "Clarifies the fallback error message." }),
+        pullRequest({
+          number: 2,
+          title: "Fix flaky avatar test",
+          body: "Stabilises the avatar fixture timing.",
+        }),
+        pullRequest({
+          number: 3,
+          title: "Update dependency versions",
+          body: "Bumps a handful of dev dependencies.",
+        }),
+        pullRequest({
+          number: 4,
+          title: "Improve error boundary copy",
+          body: "Clarifies the fallback error message.",
+        }),
       ];
       const items = [bodyMatchItem, ...nonMatchingItems];
       await loadPullRequestList(page, singlePage(items));
@@ -91,7 +104,9 @@ test.describe("Local Text Search", () => {
       // expect: This holds even if the matching text falls beyond the first 50 characters that are visibly
       // truncated on screen — i.e. search matches the full body text, not just the visibly truncated preview.
       expect(bodyMatchItem.body.slice(0, 50)).not.toContain("gadgetword");
-      await expect(listItems(page).first().getByTestId("pr-body-preview")).not.toHaveText(/gadgetword/i);
+      await expect(listItems(page).first().getByTestId("pr-body-preview")).not.toHaveText(
+        /gadgetword/i,
+      );
     });
   });
 
@@ -142,7 +157,9 @@ test.describe("Local Text Search", () => {
     await expect(listItems(page)).toHaveCount(FOUR_ITEMS.length);
   });
 
-  test("Search combined with state filter — both params present in the URL simultaneously", async ({ page }) => {
+  test("Search combined with state filter — both params present in the URL simultaneously", async ({
+    page,
+  }) => {
     // 1. Mock `state=open` route to return 3 open items, two of which contain 'auth' in their titles and one which
     // does not. Navigate to `/`, select the 'Open' filter, then type 'auth' into search.
     const openItems = [
@@ -196,11 +213,15 @@ test.describe("Local Text Search", () => {
     expect(requests.at(-1)?.searchParams.get("state")).toBe("open");
   });
 
-  test("Search combined with paginated (appended) results covers newly loaded items too", async ({ page }) => {
+  test("Search combined with paginated (appended) results covers newly loaded items too", async ({
+    page,
+  }) => {
     // 1. Mock first page: items #1-3 (none matching 'widget'), nextCursor: 'CURSOR_A'. Mock second page
     // (cursor=CURSOR_A): items #4-6, exactly one of which (#5) contains 'widget' in its title, nextCursor: null.
     // Navigate to `/`.
-    const firstPage = [1, 2, 3].map((number) => pullRequest({ number, title: `Pull request number ${number}` }));
+    const firstPage = [1, 2, 3].map((number) =>
+      pullRequest({ number, title: `Pull request number ${number}` }),
+    );
     const widgetItem = pullRequest({ number: 5, title: "Ship the new pricing widget" });
     const secondPage = [
       pullRequest({ number: 4, title: "Pull request number 4" }),

@@ -5,8 +5,12 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { loadPullRequestList, pullRequest, singlePage } from "../fixtures/pull-requests";
 
-const FIRST_PAGE = [1, 2, 3].map((number) => pullRequest({ number, title: `Pull request number ${number}` }));
-const SECOND_PAGE = [4, 5, 6].map((number) => pullRequest({ number, title: `Pull request number ${number}` }));
+const FIRST_PAGE = [1, 2, 3].map((number) =>
+  pullRequest({ number, title: `Pull request number ${number}` }),
+);
+const SECOND_PAGE = [4, 5, 6].map((number) =>
+  pullRequest({ number, title: `Pull request number ${number}` }),
+);
 
 function list(page: Page) {
   return page.getByRole("list", { name: "Pull requests" });
@@ -26,7 +30,9 @@ function cursorARequestCount(requests: URL[]) {
 }
 
 test.describe("Pagination (Load More)", () => {
-  test("Load More button appends new items to the existing list without replacing it", async ({ page }) => {
+  test("Load More button appends new items to the existing list without replacing it", async ({
+    page,
+  }) => {
     // 1. Mock first page: GET /api/pull-requests?limit=20 (no cursor) returns items #1-3 with nextCursor:
     // 'CURSOR_A'. Mock second page: a request whose query includes cursor=CURSOR_A returns items #4-6 with
     // nextCursor: null. Navigate to `/`.
@@ -56,7 +62,9 @@ test.describe("Pagination (Load More)", () => {
     expect(requests.at(-1)?.searchParams.get("cursor")).toBe("CURSOR_A");
 
     for (const [index, item] of [...FIRST_PAGE, ...SECOND_PAGE].entries()) {
-      await expect(listItems(page).nth(index).getByRole("link", { name: item.title })).toBeVisible();
+      await expect(
+        listItems(page).nth(index).getByRole("link", { name: item.title }),
+      ).toBeVisible();
     }
   });
 
@@ -110,7 +118,9 @@ test.describe("Pagination (Load More)", () => {
     await expect(loadMoreButton(page)).toHaveCount(0);
   });
 
-  test("A failed Load More request shows an error and preserves the existing list", async ({ page }) => {
+  test("A failed Load More request shows an error and preserves the existing list", async ({
+    page,
+  }) => {
     // 1. Mock first page returning 3 items with nextCursor: 'CURSOR_A'. Mock the cursor=CURSOR_A request to fulfil
     // with HTTP 500 and a JSON error body. Navigate to `/` and click 'Load more'.
     const requests = await loadPullRequestList(page, (query) =>

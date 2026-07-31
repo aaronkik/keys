@@ -57,7 +57,9 @@ test.describe("Responsive / Mobile-First Field Visibility", () => {
   test.describe("mobile", () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
-    test("Mobile viewport (390x844) shows only critical fields and hides the rest", async ({ page }) => {
+    test("Mobile viewport (390x844) shows only critical fields and hides the rest", async ({
+      page,
+    }) => {
       // 1. Mock 1 fixed item with all fields populated (body > 50 chars). Set viewport to 390x844 and navigate
       // to `/`.
       const listItem = await loadItem(page);
@@ -81,7 +83,9 @@ test.describe("Responsive / Mobile-First Field Visibility", () => {
   test.describe("tablet", () => {
     test.use({ viewport: { width: 768, height: 1024 } });
 
-    test("Tablet viewport (768x1024) reveals last-updated and SHA link but still hides body", async ({ page }) => {
+    test("Tablet viewport (768x1024) reveals last-updated and SHA link but still hides body", async ({
+      page,
+    }) => {
       // 1. Mock the same fixed item. Set viewport to 768x1024 and navigate to `/`.
       const listItem = await loadItem(page);
 

@@ -47,7 +47,9 @@ test.describe("Rendering — Happy Path List Item Fields", () => {
       const expectedPreview = item.body.slice(0, 50);
       const expectedShaHref = `https://github.com/${item.repository.owner}/${item.repository.name}/commit/${item.sha}`;
 
-      await expect(listItem.getByRole("img", { name: `Avatar for ${item.author.login}` })).toBeVisible();
+      await expect(
+        listItem.getByRole("img", { name: `Avatar for ${item.author.login}` }),
+      ).toBeVisible();
 
       const titleLink = listItem.getByRole("link", { name: item.title });
       await expect(titleLink).toBeVisible();

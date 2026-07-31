@@ -38,7 +38,10 @@ test.describe("Filtering by State", () => {
   test("Selecting 'Open' updates the URL query param and filters the list", async ({ page }) => {
     // 1. Mock GET /api/pull-requests (no state param) to return 2 open + 1 closed + 1 merged item, nextCursor:
     // null. Navigate to `/`. Assert 4 items are rendered initially.
-    const openItems = [pullRequest({ number: 1, state: "open" }), pullRequest({ number: 2, state: "open" })];
+    const openItems = [
+      pullRequest({ number: 1, state: "open" }),
+      pullRequest({ number: 2, state: "open" }),
+    ];
     const allItems = [
       ...openItems,
       pullRequest({ number: 3, state: "closed" }),
@@ -130,10 +133,15 @@ test.describe("Filtering by State", () => {
     await expect(mergedListItem.getByTestId("pr-state")).toHaveText("Merged");
   });
 
-  test("Deep-linking to ?state=open restores the filtered view on initial load", async ({ page }) => {
+  test("Deep-linking to ?state=open restores the filtered view on initial load", async ({
+    page,
+  }) => {
     // 1. Mock `state=open` route to return 2 open items only. Navigate directly to `/?state=open` (fresh browser
     // context, no prior interaction).
-    const openItems = [pullRequest({ number: 1, state: "open" }), pullRequest({ number: 2, state: "open" })];
+    const openItems = [
+      pullRequest({ number: 1, state: "open" }),
+      pullRequest({ number: 2, state: "open" }),
+    ];
     const requests = await loadPullRequestList(page, singlePage(openItems), "/?state=open");
 
     // 2. Assert the initial request fired on page load already includes state=open (i.e. the filter is read from
@@ -174,9 +182,17 @@ test.describe("Filtering by State", () => {
     // 1. Mock base, state=open, and state=closed routes with distinct fixture item sets (distinguishable by
     // title). Navigate to `/`. Select 'Open'. Then select 'Closed'.
     const baseOpenItem = pullRequest({ number: 1, state: "open", title: "Base list open item" });
-    const baseClosedItem = pullRequest({ number: 2, state: "closed", title: "Base list closed item" });
+    const baseClosedItem = pullRequest({
+      number: 2,
+      state: "closed",
+      title: "Base list closed item",
+    });
     const filteredOpenItem = pullRequest({ number: 1, state: "open", title: "Open-filtered item" });
-    const filteredClosedItem = pullRequest({ number: 2, state: "closed", title: "Closed-filtered item" });
+    const filteredClosedItem = pullRequest({
+      number: 2,
+      state: "closed",
+      title: "Closed-filtered item",
+    });
 
     await loadPullRequestList(page, (query) => {
       const state = query.get("state");

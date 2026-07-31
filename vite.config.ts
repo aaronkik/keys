@@ -1,6 +1,12 @@
 import { defineConfig, configDefaults } from "vite-plus";
 
-const GENERATED = ["**/dist/**", "**/.turbo/**", "**/generated/**", "**/routeTree.gen.ts"];
+const GENERATED = [
+  "**/dist/**",
+  "**/.turbo/**",
+  "**/generated/**",
+  "**/routeTree.gen.ts",
+  "**/.claude/**",
+];
 
 export default defineConfig({
   lint: {
