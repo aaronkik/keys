@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generate": {
+      "inputs": ["orval.config.ts"],
+      "outputs": ["src/generated/**"]
+    },
+    "build": {
+      "outputs": ["dist/**", ".output/**", ".tanstack/**"]
+    }
+  }
+}

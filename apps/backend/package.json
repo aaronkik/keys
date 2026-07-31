@@ -1,0 +1,23 @@
+{
+  "name": "@keys/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "orval",
+    "dev": "bun --hot src/index.ts",
+    "start": "bun src/index.ts",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "0.9.0",
+    "hono": "4.12.32",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@keys/api-contract": "workspace:*",
+    "@types/bun": "1.3.14",
+    "orval": "8.23.0",
+    "vitest": "4.1.10"
+  }
+}

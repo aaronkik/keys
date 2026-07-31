@@ -1,0 +1,10 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generate": {
+      "inputs": ["main.tsp", "tspconfig.yaml"],
+      "outputs": ["openapi/**"]
+    }
+  }
+}

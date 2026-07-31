@@ -1,0 +1,26 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": ["mise.toml", "bunfig.toml", "tsconfig.base.json"],
+  "tasks": {
+    "//#check": {
+      "cache": false
+    },
+    "//#check:fix": {
+      "cache": false
+    },
+    "generate": {
+      "dependsOn": ["^generate"]
+    },
+    "build": {
+      "dependsOn": ["generate", "^build"]
+    },
+    "test": {
+      "dependsOn": ["generate"]
+    },
+    "dev": {
+      "dependsOn": ["^generate"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[tools]
+node = "24.18.1"
+bun = "1.3.14"
+turbo = "2.10.7"
+"npm:vite-plus" = "0.2.6"
+
+[settings]
+experimental = true

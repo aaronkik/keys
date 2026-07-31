@@ -1,0 +1,10 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generate": {
+      "inputs": ["orval.config.ts"],
+      "outputs": ["src/generated/**"]
+    }
+  }
+}
