@@ -83,5 +83,5 @@ op listPullRequests(
   @minValue(1)
   @maxValue(100)
   @query
-  limit?: int32 = 10,
+  limit?: integer = 10,
 ): Page<PullRequest> | ApiError;

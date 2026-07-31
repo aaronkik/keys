@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 import { z as zod } from 'zod';
-import { coerceNumericQuery } from '../zod-preprocess';
 
 export const listPullRequestsQueryStateDefault = `all`;
 export const listPullRequestsQueryLimitDefault = 10;
@@ -14,11 +13,11 @@ export const listPullRequestsQueryLimitMax = 100;
 
 
 
-export const ListPullRequestsQueryParams = zod.preprocess(coerceNumericQuery, zod.object({
+export const ListPullRequestsQueryParams = zod.object({
   "cursor": zod.string().optional().describe('Opaque cursor from a previous response\'s `nextCursor`.'),
   "state": zod.enum(['open', 'closed', 'all']).default(listPullRequestsQueryStateDefault).describe('Filter by pull request state. Defaults to `all`.'),
   "limit": zod.int().min(1).max(listPullRequestsQueryLimitMax).default(listPullRequestsQueryLimitDefault).describe('Maximum number of items to return.')
-}))
+})
 
 export const ListPullRequestsResponse = zod.object({
   "items": zod.array(zod.object({

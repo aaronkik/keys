@@ -15,17 +15,6 @@ export default defineConfig({
           handlers: "src/handlers",
           handlerGenerationStrategy: "smart",
         },
-        // Query params arrive as strings, so `limit: int32` must be converted
-        // before the generated validator will accept it. `coerce` cannot do
-        // this: zod 4 has no `z.coerce.int`, which is what `int32` maps to.
-        zod: {
-          preprocess: {
-            query: {
-              name: "coerceNumericQuery",
-              path: "./src/zod-preprocess.ts",
-            },
-          },
-        },
       },
     },
   },
