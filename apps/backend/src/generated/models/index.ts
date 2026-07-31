@@ -9,6 +9,7 @@
 export * from './apiError';
 export * from './author';
 export * from './listPullRequestsParams';
+export * from './listPullRequestsState';
 export * from './pullRequest';
 export * from './pullRequestPage';
 export * from './pullRequestState';

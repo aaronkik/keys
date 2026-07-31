@@ -9,20 +9,13 @@ using OpenAPI;
 @doc("Read access to pull request data.")
 namespace KeysApi;
 
-@doc("The lifecycle state of a pull request.")
-union PullRequestState {
-  Open: "open",
-  Closed: "closed",
-  Merged: "merged",
-}
-
-@doc("The GitHub account that opened a pull request.")
+@doc("The account that opened a pull request.")
 model Author {
-  @doc("The account's login handle.")
-  login: string;
+  @doc("The account's username.")
+  username: string;
 
   @doc("URL of the account's avatar image.")
-  avatarUrl: url;
+  profileImage: url;
 }
 
 @doc("The repository a pull request belongs to.")
@@ -34,33 +27,25 @@ model Repository {
   name: string;
 }
 
-@doc("A GitHub pull request.")
+@doc("A pull request.")
 model PullRequest {
-  @doc("Stable identifier for the pull request.")
+  @doc("Identifier for the pull request.")
   id: string;
-
-  @doc("The number shown in the GitHub UI, unique within a repository.")
-  number: int32;
 
   @doc("The pull request title.")
   title: string;
 
-  state: PullRequestState;
-
-  @doc("Whether the pull request is still a draft.")
-  draft: boolean;
+  @doc("The lifecycle state of a pull request.")
+  state: "open" | "closed";
 
   author: Author;
   repository: Repository;
 
-  @doc("Web URL of the pull request.")
+  @doc("URL of the pull request.")
   url: url;
 
   createdAt: utcDateTime;
   updatedAt: utcDateTime;
-
-  @doc("When the pull request was merged, or null if it never was.")
-  mergedAt: utcDateTime | null;
 }
 
 @doc("A single page of results, addressed by an opaque cursor.")
@@ -76,9 +61,6 @@ model Page<Item> {
 @error
 @doc("An error returned by the API.")
 model ApiError {
-  @doc("Stable, machine-readable error code.")
-  code: string;
-
   @doc("Human-readable description of what went wrong.")
   message: string;
 }
@@ -93,9 +75,13 @@ op listPullRequests(
   @query
   cursor?: string,
 
+  @doc("Filter by pull request state. Defaults to `all`.")
+  @query()
+  state?: "open" | "closed" | "all" = "all",
+
   @doc("Maximum number of items to return.")
   @minValue(1)
   @maxValue(100)
   @query
-  limit?: int32 = 20,
+  limit?: int32 = 10,
 ): Page<PullRequest> | ApiError;

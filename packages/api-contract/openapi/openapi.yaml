@@ -18,6 +18,18 @@ paths:
           schema:
             type: string
           explode: false
+        - name: state
+          in: query
+          required: false
+          description: Filter by pull request state. Defaults to `all`.
+          schema:
+            type: string
+            enum:
+              - open
+              - closed
+              - all
+            default: all
+          explode: false
         - name: limit
           in: query
           required: false
@@ -27,7 +39,7 @@ paths:
             format: int32
             minimum: 1
             maximum: 100
-            default: 20
+            default: 10
           explode: false
       responses:
         '200':
@@ -47,12 +59,8 @@ components:
     ApiError:
       type: object
       required:
-        - code
         - message
       properties:
-        code:
-          type: string
-          description: Stable, machine-readable error code.
         message:
           type: string
           description: Human-readable description of what went wrong.
@@ -60,47 +68,41 @@ components:
     Author:
       type: object
       required:
-        - login
-        - avatarUrl
+        - username
+        - profileImage
       properties:
-        login:
+        username:
           type: string
-          description: The account's login handle.
-        avatarUrl:
+          description: The account's username.
+        profileImage:
           type: string
           format: uri
           description: URL of the account's avatar image.
-      description: The GitHub account that opened a pull request.
+      description: The account that opened a pull request.
     PullRequest:
       type: object
       required:
         - id
-        - number
         - title
         - state
-        - draft
         - author
         - repository
         - url
         - createdAt
         - updatedAt
-        - mergedAt
       properties:
         id:
           type: string
-          description: Stable identifier for the pull request.
-        number:
-          type: integer
-          format: int32
-          description: The number shown in the GitHub UI, unique within a repository.
+          description: Identifier for the pull request.
         title:
           type: string
           description: The pull request title.
         state:
-          $ref: '#/components/schemas/PullRequestState'
-        draft:
-          type: boolean
-          description: Whether the pull request is still a draft.
+          type: string
+          enum:
+            - open
+            - closed
+          description: The lifecycle state of a pull request.
         author:
           $ref: '#/components/schemas/Author'
         repository:
@@ -108,20 +110,14 @@ components:
         url:
           type: string
           format: uri
-          description: Web URL of the pull request.
+          description: URL of the pull request.
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
-        mergedAt:
-          anyOf:
-            - type: string
-              format: date-time
-            - type: 'null'
-          description: When the pull request was merged, or null if it never was.
-      description: A GitHub pull request.
+      description: A pull request.
     PullRequestPage:
       type: object
       required:
@@ -139,13 +135,6 @@ components:
             - type: 'null'
           description: Cursor to pass as `cursor` to fetch the next page. Null on the last page.
       description: A single page of results, addressed by an opaque cursor.
-    PullRequestState:
-      type: string
-      enum:
-        - open
-        - closed
-        - merged
-      description: The lifecycle state of a pull request.
     Repository:
       type: object
       required:

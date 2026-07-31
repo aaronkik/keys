@@ -15,5 +15,4 @@ export type PullRequestState = typeof PullRequestState[keyof typeof PullRequestS
 export const PullRequestState = {
   open: 'open',
   closed: 'closed',
-  merged: 'merged',
 } as const;

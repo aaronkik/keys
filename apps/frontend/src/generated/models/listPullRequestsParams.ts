@@ -5,12 +5,17 @@
  * Read access to pull request data.
  * OpenAPI spec version: 1.0.0
  */
+import type { ListPullRequestsState } from './listPullRequestsState';
 
 export type ListPullRequestsParams = {
 /**
  * Opaque cursor from a previous response's `nextCursor`.
  */
 cursor?: string;
+/**
+ * Filter by pull request state. Defaults to `all`.
+ */
+state?: ListPullRequestsState;
 /**
  * Maximum number of items to return.
  * @minimum 1

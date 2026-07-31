@@ -10,24 +10,19 @@ import type { PullRequestState } from './pullRequestState';
 import type { Repository } from './repository';
 
 /**
- * A GitHub pull request.
+ * A pull request.
  */
 export interface PullRequest {
-  /** Stable identifier for the pull request. */
+  /** Identifier for the pull request. */
   id: string;
-  /** The number shown in the GitHub UI, unique within a repository. */
-  number: number;
   /** The pull request title. */
   title: string;
+  /** The lifecycle state of a pull request. */
   state: PullRequestState;
-  /** Whether the pull request is still a draft. */
-  draft: boolean;
   author: Author;
   repository: Repository;
-  /** Web URL of the pull request. */
+  /** URL of the pull request. */
   url: string;
   createdAt: string;
   updatedAt: string;
-  /** When the pull request was merged, or null if it never was. */
-  mergedAt: string | null;
 }

@@ -6,13 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-/**
- * The lifecycle state of a pull request.
- */
-export type PullRequestState = typeof PullRequestState[keyof typeof PullRequestState];
+export type ListPullRequestsState = typeof ListPullRequestsState[keyof typeof ListPullRequestsState];
 
 
-export const PullRequestState = {
+export const ListPullRequestsState = {
   open: 'open',
   closed: 'closed',
+  all: 'all',
 } as const;

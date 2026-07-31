@@ -10,8 +10,6 @@
  * An error returned by the API.
  */
 export interface ApiError {
-  /** Stable, machine-readable error code. */
-  code: string;
   /** Human-readable description of what went wrong. */
   message: string;
 }

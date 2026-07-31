@@ -7,11 +7,11 @@
  */
 
 /**
- * The GitHub account that opened a pull request.
+ * The account that opened a pull request.
  */
 export interface Author {
-  /** The account's login handle. */
-  login: string;
+  /** The account's username. */
+  username: string;
   /** URL of the account's avatar image. */
-  avatarUrl: string;
+  profileImage: string;
 }

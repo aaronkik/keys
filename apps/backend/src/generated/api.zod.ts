@@ -8,36 +8,35 @@
 import { z as zod } from 'zod';
 import { coerceNumericQuery } from '../zod-preprocess';
 
-export const listPullRequestsQueryLimitDefault = 20;
+export const listPullRequestsQueryStateDefault = `all`;
+export const listPullRequestsQueryLimitDefault = 10;
 export const listPullRequestsQueryLimitMax = 100;
 
 
 
 export const ListPullRequestsQueryParams = zod.preprocess(coerceNumericQuery, zod.object({
   "cursor": zod.string().optional().describe('Opaque cursor from a previous response\'s `nextCursor`.'),
+  "state": zod.enum(['open', 'closed', 'all']).default(listPullRequestsQueryStateDefault).describe('Filter by pull request state. Defaults to `all`.'),
   "limit": zod.int().min(1).max(listPullRequestsQueryLimitMax).default(listPullRequestsQueryLimitDefault).describe('Maximum number of items to return.')
 }))
 
 export const ListPullRequestsResponse = zod.object({
   "items": zod.array(zod.object({
-  "id": zod.string().describe('Stable identifier for the pull request.'),
-  "number": zod.int().describe('The number shown in the GitHub UI, unique within a repository.'),
+  "id": zod.string().describe('Identifier for the pull request.'),
   "title": zod.string().describe('The pull request title.'),
-  "state": zod.enum(['open', 'closed', 'merged']).describe('The lifecycle state of a pull request.'),
-  "draft": zod.boolean().describe('Whether the pull request is still a draft.'),
+  "state": zod.enum(['open', 'closed']).describe('The lifecycle state of a pull request.'),
   "author": zod.object({
-  "login": zod.string().describe('The account\'s login handle.'),
-  "avatarUrl": zod.url().describe('URL of the account\'s avatar image.')
-}).describe('The GitHub account that opened a pull request.'),
+  "username": zod.string().describe('The account\'s username.'),
+  "profileImage": zod.url().describe('URL of the account\'s avatar image.')
+}).describe('The account that opened a pull request.'),
   "repository": zod.object({
   "owner": zod.string().describe('The account or organisation that owns the repository.'),
   "name": zod.string().describe('The repository name, without the owner prefix.')
 }).describe('The repository a pull request belongs to.'),
-  "url": zod.url().describe('Web URL of the pull request.'),
+  "url": zod.url().describe('URL of the pull request.'),
   "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true}),
-  "mergedAt": zod.union([zod.iso.datetime({"offset":true}),zod.null()]).describe('When the pull request was merged, or null if it never was.')
-}).describe('A GitHub pull request.')).describe('The items in this page, ordered newest first.'),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).describe('A pull request.')).describe('The items in this page, ordered newest first.'),
   "nextCursor": zod.union([zod.string(),zod.null()]).describe('Cursor to pass as `cursor` to fetch the next page. Null on the last page.')
 }).describe('A single page of results, addressed by an opaque cursor.')
 
