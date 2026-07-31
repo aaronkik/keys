@@ -40,3 +40,7 @@ TODO: Document API Contract Approach
 
 - CI/CD monorepo caching.
 - Authenticating/Authorization of the backend API.
+- The frontend respects GitHub rate-limitting.
+- Changing the filters shows a loading state.
+- The api-contract package is the source of truth for the auto-generated clients.
+- Validate the web app colours meet accessible guidelines
