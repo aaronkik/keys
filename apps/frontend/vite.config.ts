@@ -1,9 +1,17 @@
+import { fileURLToPath } from "node:url";
+
+import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   server: {
     port: 3000,
     proxy: {
@@ -16,9 +24,20 @@ export default defineConfig({
       },
     },
   },
-  plugins: [tanstackStart({ spa: { enabled: true } }), viteReact()],
+  plugins: [
+    tanstackStart({
+      spa: { enabled: true },
+      prerender: { enabled: false },
+    }),
+    viteReact(),
+    tailwindcss(),
+  ],
+  preview: {
+    port: 3000,
+  },
   test: {
     include: ["src/**/*.test.tsx"],
+    setupFiles: ["./vitest-setup.ts"],
     // Vite+ installs its Vitest into an isolated store, so a bare `jsdom`
     // environment is not resolvable from there. Browser mode is the DOM
     // environment Vite+ actually ships support for.
