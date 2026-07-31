@@ -10,16 +10,13 @@ const page: PullRequestPage = {
   items: [
     {
       id: "PR_1",
-      number: 412,
       title: "Add cursor pagination to the pull request list",
       state: "open",
-      draft: false,
-      author: { login: "octocat", avatarUrl: "https://example.test/a.png" },
+      author: { username: "octocat", profileImage: "https://example.test/a.png" },
       repository: { owner: "keys", name: "platform" },
       url: "https://example.test/pull/412",
       createdAt: "2026-07-28T09:14:00Z",
       updatedAt: "2026-07-29T16:02:00Z",
-      mergedAt: null,
     },
   ],
   nextCursor: null,

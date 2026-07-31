@@ -23,12 +23,10 @@ export function PullRequestList() {
     <ul>
       {data.data.items.map((pullRequest) => (
         <li key={pullRequest.id}>
-          <a href={pullRequest.url}>
-            #{pullRequest.number} {pullRequest.title}
-          </a>{" "}
+          <a href={pullRequest.url}>{pullRequest.title}</a>{" "}
           <span>
             {pullRequest.state} · {pullRequest.repository.owner}/{pullRequest.repository.name} ·{" "}
-            {pullRequest.author.login}
+            {pullRequest.author.username}
           </span>
         </li>
       ))}
