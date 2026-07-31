@@ -1,0 +1,118 @@
+import type { Page } from "@playwright/test";
+
+/**
+ * The list item shape the UI is specified against. `body` and `sha` are not in
+ * packages/api-contract yet — see the prerequisites section of
+ * specs/pull-request-list.md. These tests are the red-phase specification that
+ * drives adding them, so the fixtures include them deliberately.
+ */
+export type PullRequestFixture = {
+  id: string;
+  number: number;
+  title: string;
+  state: "open" | "closed" | "merged";
+  draft: boolean;
+  author: { login: string; avatarUrl: string };
+  repository: { owner: string; name: string };
+  url: string;
+  createdAt: string;
+  updatedAt: string;
+  mergedAt: string | null;
+  body: string;
+  sha: string;
+};
+
+export type PullRequestPageFixture = {
+  items: PullRequestFixture[];
+  nextCursor: string | null;
+};
+
+/**
+ * Fixed "now" for the suite. Tests freeze the browser clock to this instant so
+ * relative last-updated rendering ("2 days ago") is deterministic.
+ */
+export const FROZEN_NOW = new Date("2026-01-15T12:00:00.000Z");
+
+/** A 1x1 transparent PNG, so avatars resolve without any network access. */
+const AVATAR_URL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+/**
+ * Builds one item with only the fields the UI needs, all deterministic. Pass a
+ * distinct `number` per item in a list; everything else defaults off it.
+ */
+export function pullRequest(overrides: Partial<PullRequestFixture> = {}): PullRequestFixture {
+  const number = overrides.number ?? 1;
+
+  return {
+    id: `PR_${number}`,
+    number,
+    title: `Pull request ${number}`,
+    state: "open",
+    draft: false,
+    author: { login: "octocat", avatarUrl: AVATAR_URL },
+    repository: { owner: "keys", name: "platform" },
+    url: `https://github.com/keys/platform/pull/${number}`,
+    createdAt: "2026-01-10T09:00:00.000Z",
+    updatedAt: "2026-01-13T12:00:00.000Z",
+    mergedAt: null,
+    body: `Body of pull request ${number}.`,
+    sha: `${number}`.padStart(40, "a"),
+    ...overrides,
+  };
+}
+
+type ListResponse = PullRequestPageFixture | { status: number; body: unknown };
+
+/** Decides what the list endpoint returns for a given request's query string. */
+export type ListResponder = (query: URLSearchParams) => ListResponse | Promise<ListResponse>;
+
+/**
+ * Fulfils every `/api/pull-requests` call from fixtures, so no scenario needs
+ * the backend running. Returns the list of intercepted request URLs, which
+ * grows as the page fetches — assertions about `cursor` and `state` round-trips
+ * read from it rather than inferring the query from what rendered.
+ */
+export async function mockPullRequestApi(page: Page, respond: ListResponder): Promise<URL[]> {
+  const requests: URL[] = [];
+
+  await page.route("**/api/pull-requests*", async (route) => {
+    const url = new URL(route.request().url());
+    requests.push(url);
+
+    const result = await respond(url.searchParams);
+    const isError = "status" in result;
+
+    await route.fulfill({
+      status: isError ? result.status : 200,
+      contentType: "application/json",
+      body: JSON.stringify(isError ? result.body : result),
+    });
+  });
+
+  return requests;
+}
+
+/** Convenience responder for the common "one page, no filtering" case. */
+export function singlePage(items: PullRequestFixture[]): ListResponder {
+  return () => ({ items, nextCursor: null });
+}
+
+/**
+ * Freezes the clock, stubs the list endpoint and loads the page — the three
+ * opening lines every scenario shares. Returns the intercepted request URLs.
+ *
+ * The clock is frozen because the last-updated field renders relative time;
+ * without it the rendered text would drift with the wall clock.
+ */
+export async function loadPullRequestList(
+  page: Page,
+  respond: ListResponder,
+  url = "/",
+): Promise<URL[]> {
+  await page.clock.setFixedTime(FROZEN_NOW);
+  const requests = await mockPullRequestApi(page, respond);
+  await page.goto(url);
+
+  return requests;
+}
