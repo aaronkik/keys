@@ -11,6 +11,7 @@ export function PullRequestSearch({ value, onChange }: PullRequestSearchProps) {
     <Input
       type="search"
       aria-label="Search pull requests"
+      placeholder="Search pull requests"
       value={value}
       onChange={(event) => onChange(event.target.value)}
       className="max-w-xs"
