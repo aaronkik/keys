@@ -2,6 +2,9 @@
 
 A fullstack app that interacts with the GitHub API. Built with assistance from Claude Code.
 
+The app list pull requests, currently only from the [React repository](https://github.com/react/react) to get something technically working.
+With more time, I would support users being able to search which repository they would want to view pull requests from.
+
 ## Getting started
 
 [mise](https://mise.jdx.dev/getting-started.html) is used to manage dev tools like Node.js versions.
