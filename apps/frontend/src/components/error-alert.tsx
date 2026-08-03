@@ -26,7 +26,7 @@ export function ErrorAlert({
       <AlertTitle>{title}</AlertTitle>
       {description !== null ? <AlertDescription>{description}</AlertDescription> : null}
 
-      {onRetry !== null ? (
+      {onRetry ? (
         <div className="mt-3">
           <Button type="button" variant="outline" size="sm" onClick={onRetry}>
             {retryLabel}
